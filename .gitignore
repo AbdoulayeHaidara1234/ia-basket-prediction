@@ -1,0 +1,11 @@
+.venv/
+venv/
+__pycache__/
+.DS_Store
+data/raw/
+data/interim/
+data/processed/
+*.csv
+*.txt
+.vscode/
+.idea/
