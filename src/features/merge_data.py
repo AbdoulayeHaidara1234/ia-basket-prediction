@@ -4,7 +4,7 @@ import pandas as pd
 def get_data_directory():
     """Retourne le chemin vers le dossier de données."""
     script_dir = os.path.dirname(__file__)
-    return os.path.join(script_dir, "..", "data", "raw", "Dataset1_Resultat_Match")
+    return os.path.join(script_dir, "..", "..", "data", "raw", "schedule")
 
 
 

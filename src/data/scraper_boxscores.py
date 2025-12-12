@@ -8,7 +8,7 @@ import re
 def get_path_file():
     """Retourne le chemin vers le dossier de données."""
     script_dir = os.path.dirname(__file__)
-    path_file = os.path.join(script_dir, "..", "data", "raw", "games_url.txt")
+    path_file = os.path.join(script_dir, "..", "..", "data", "interim", "games_url.txt")
     return path_file
 
 team_name = []

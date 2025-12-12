@@ -144,7 +144,7 @@ def save_url():
         script_dir = os.path.dirname(__file__)
         # → "/home/user/projet/src"
 
-        data_dir = os.path.join(script_dir, "..", "data", "raw")
+        data_dir = os.path.join(script_dir, "..", "..", "data", "interim")
         # → "/home/user/projet/src/../data/raw"
         # ".." = remonter d'un dossier → "/home/user/projet/data/raw"
 
