@@ -1,0 +1,40 @@
+name: Vérification Qualité Code (Linter)
+
+# QUAND le robot doit-il travailler ?
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+# QUOI faire ?
+jobs:
+  build:
+    runs-on: ubuntu-latest  # Le robot utilise un Linux tout neuf
+
+    steps:
+    # 1. Le robot récupère ton code
+    - name: Récupération du code (Checkout)
+      uses: actions/checkout@v4
+
+    # 2. Il installe Python
+    - name: Installation de Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    # 3. Il installe le Linter (Flake8)
+    - name: Installation des outils
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8
+
+    # 4. Il lance l'analyse (Le test)
+    # E9, F63, F7, F82 = Erreurs de syntaxe graves uniquement
+    # --count --statistics = Affiche le nombre d'erreurs
+    - name: Analyse du code avec Flake8
+      run: |
+        # Arrête le build s'il y a des erreurs de syntaxe Python ou des noms indéfinis
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # (Optionnel) Avertit sur le style mais ne bloque pas (exit-zero)
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics

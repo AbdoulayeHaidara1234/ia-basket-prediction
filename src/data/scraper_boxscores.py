@@ -1,136 +1,124 @@
-import os
 import pandas as pd
 from curl_cffi import requests as requests_impersonate
 from bs4 import BeautifulSoup
+import time
 import random
 import re
+from pathlib import Path
 
-def get_path_file():
-    """Retourne le chemin vers le dossier de données."""
-    script_dir = os.path.dirname(__file__)
-    path_file = os.path.join(script_dir, "..", "..", "data", "interim", "games_url.txt")
-    return path_file
+# --- CONFIGURATION ---
+INPUT_FILE = Path(__file__).resolve().parents[2] / "data" / "interim" / "games_url.txt"
+OUTPUT_DIR = Path(__file__).resolve().parents[2] / "data" / "raw" / "boxscores"
+OUTPUT_CSV = OUTPUT_DIR / "all_boxscores_totals.csv"
 
-team_name = []
+def get_random_browser():
+    """Retourne un user-agent aléatoire."""
 
-team_stats = []
-
-browser_version = [
+    browser_version = [
         "chrome99", "chrome100", "chrome101", "chrome104", "chrome107", "chrome110", "chrome116", "chrome119", "chrome120", "chrome123", "chrome124", "chrome131", "chrome133a", "chrome136",
 
         "safari153", "safari155", "safari170", "safari180", "safari184", "safari260",
 
         "firefox133", "firefox135"
     ]
-
-
-
-
-path_file = get_path_file()
-
-print(path_file)
-
-with open(path_file, "r") as f:
-    """for url in f:
-        random_browser = random.choice(browser_version)
-
-        try: 
-            response = requests_impersonate(url, impersonate=random_browser, timeout=15)
-
-            if response.status_code == 200:
-                soup = BeautifulSoup(response.content, "html.parser")
-
-            team_name = soup.findAll(name="h2", string=re.compile("Basic and Advanced Stats"))
-        
-        except Exception as e:
-            print("Erreur")"""
-    url = f.readline()
-    print(url[-1])
-
-    response = requests_impersonate.get(url[:-1], impersonate="chrome101", timeout=15)   
-
     
+    return random.choice(browser_version)
 
-    if response.status_code == 200:
+def parse_boxscore(url, request_count):
+    """Extrait les 'Team Totals' d'une page de boxscore."""
+    try:
+        browser = get_random_browser()
+        response = requests_impersonate.get(url, impersonate=browser, timeout=20)
+        request_count += 1
+        
+        if response.status_code != 200:
+            print(f"Erreur HTTP {response.status_code} : {url}")
+            return None
+
         soup = BeautifulSoup(response.content, "html.parser")
-
-
-        # 1. Trouver toutes les tables qui finissent par "-game-basic"
-        # Cela permet de trouver NYK et BOS sans connaître les noms à l'avance
+        
+        # Trouver les tables de stats basiques (ex: id="box-LAL-game-basic")
         tables = soup.find_all('table', id=re.compile('box-.*-game-basic'))
-
-        data_result = []
-
-        list_df = []
-
+        
+        match_data = []
+        
         for table in tables:
-            # Récupérer le nom de l'équipe depuis l'ID (ex: box-NYK-game-basic -> NYK)
+            # Extraction du nom de l'équipe depuis l'ID de la table
             table_id = table.get('id')
-            team_name = table_id.split('-')[1]
-    
-            # --- Récupération des En-têtes (Headers) ---
-            # On cherche la dernière ligne du thead pour avoir les vrais noms de colonnes (MP, FG, FGA...)
+            team_code = table_id.split('-')[1] # ex: 'LAL'
+            
+            # Extraction des headers (MP, FG, FGA...)
             thead = table.find('thead')
-            header_row = thead.find_all('tr')[-1] # La dernière ligne contient les titres exacts
-            headers = [th.text.strip() for th in header_row.find_all('th')]
-    
-            # --- Récupération du Footer (Team Totals) ---
+            headers = [th.text.strip() for th in thead.find_all('tr')[-1].find_all('th')][1:] # On ignore le 1er header vide
+            
+            # Extraction du Footer (Team Totals)
             tfoot = table.find('tfoot')
-            if tfoot:
-                footer_row = tfoot.find('tr')
-        
-                # Le premier élément est souvent le titre "Team Totals" (dans un th)
-                first_th = footer_row.find('th').text.strip()
-        
-                # Les données sont dans les td
-                cells = footer_row.find_all('td')
-                values = [td.text.strip() for td in cells]
-        
-                # On combine tout : [Nom Equipe, Team Totals, 240, 43, ...]
-                full_row = [team_name, first_th] + values
-        
-                data_result.append(full_row)
+            if not tfoot:
+                continue
+                
+            footer_row = tfoot.find('tr')
+            cells = footer_row.find_all('td')
+            values = [td.text.strip() for td in cells]
+            
+            # Création d'un dictionnaire pour cette équipe
+            row_dict = {col: val for col, val in zip(headers, values)}
+            row_dict['Team'] = team_code
+            
+            
+            match_data.append(row_dict)
+            
+        return match_data, request_count
 
-     
-        
-                # Affichage propre pour vérification
-                print(f"--- Stats pour {team_name} ---")
-                # On saute la première colonne header ('Starters/Reserves') pour l'alignement
-                col_names = headers[1:] 
-                for col, val in zip(col_names, values):
-                    print(f"{col}: {val}")
-                print("\n")
+    except Exception as e:
+        print(f"Exception sur {url}: {e}")
+        return None
 
+def main():
+    # Vérification de l'existence du fichier d'entrée
+    if not INPUT_FILE.exists():
+        print(f"Fichier introuvable : {INPUT_FILE}")
+        return
 
-                # mettre val entre [] sinon pd.DataFrame ne fonctionne pas
-                dico = {col : [val] for col, val in zip(col_names, values) }
+    # Chargement des URLs
+    with open(INPUT_FILE, "r") as f:
+        urls = [line.strip() for line in f.readlines() if line.strip()]
 
-                dico['NAME'] = [team_name]
-
-                df = pd.DataFrame(dico)
-
-
-                columns = ['MP', 'FG', 'FGA', '3P', '3PA', 'FT', 'FTA', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS', 'NAME']
-
-                nv_df = df[columns].copy()
-
-                #nv_df['NAME'] = team_name
+    print(f"{len(urls)} matchs à traiter...")
 
 
-                list_df.append(nv_df)
+    all_stats = []
 
-        
-        final_df = pd.concat(list_df, ignore_index=True)
+    request_count = 0
 
-        
-
-
-    else:
-        print("Probleme")
-
-
+    columns = ['MP', 'FG', 'FGA', '3P', '3PA', 'FT', 'FTA', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS', 'Team']
     
+    # Boucle de scraping
+    for i, url in enumerate(urls):
+        print(f"[{i+1}/{len(urls)}] Scraping : {url}")
 
         
+        data, request_count = parse_boxscore(url, request_count)
+        if data:
+            all_stats.extend(data)
+        
+         # Pause respectueuse pour éviter le ban IP
+        if request_count % 5 == 0:
+        # Pause aléatoire de 25 à 40 secondes toutes les 5 requêtes
+            pause_longue = random.uniform(25, 40)
+            time.sleep(pause_longue)
+        else:
+        # Pause courte de 8 à 15 secondes entre chaque requête normale
+            pause_courte = random.uniform(8, 15)
+            time.sleep(pause_courte)
 
+    # Sauvegarde finale
+    if all_stats:
+        final_df = pd.DataFrame(all_stats, columns=columns)
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        final_df.to_csv(OUTPUT_CSV, index=False)
+        print(f"Terminé ! Données sauvegardées dans : {OUTPUT_CSV}")
+    else:
+        print("Aucune donnée récupérée.")
 
+if __name__ == "__main__":
+    main()
