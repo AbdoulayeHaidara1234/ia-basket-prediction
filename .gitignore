@@ -9,3 +9,4 @@ data/processed/
 *.txt
 .vscode/
 .idea/
+test*
