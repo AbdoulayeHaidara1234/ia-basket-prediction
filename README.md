@@ -2,19 +2,21 @@
 <br>
 Ce projet a pour objectif de construire une architecture système IA complète, de la collecte de données jusqu'à la prédiction des résultats de matchs de la NBA.
 Il s'inscrit dans le cadre d'un projet personnel pour maîtriser les enjeux la Data Science.
+<br><br>
 
-🎯 Objectifs du Projet
+# 🎯 Objectifs du Projet
 <br>
 Objectif Business : Développer un modèle capable de prédire l'issue d'un match (Classification binaire).
 Données d'entraînement : Matchs d'octobre à février (Saison 2024-2025).
 Cible : Prédire la victoire de l'équipe à domicile.
+<br><br>
 
 # 🏗️ Architecture Technique
 <br>
 Structure du projet :
 <br>
 <img width="629" height="283" alt="image" src="https://github.com/user-attachments/assets/cbd4d129-d0ca-4760-b97e-e59df7ec2430" />
-<br>
+<br><br>
 
 # 🛠️ Installation et Configuration
 <br>
@@ -23,7 +25,7 @@ Cloner le projet :
 git clone https://github.com/votre-utilisateur/ia-basket-prediction.git
 <br>
 cd ia-basket-prediction
-
+<br><br>
 
 Créer l'environnement virtuel :
 <br>
@@ -33,11 +35,11 @@ source .venv/bin/activate  # Sur Mac/Linux
 <br>
 .venv\Scripts\activate   # Sur Windows
 
-<br>
+<br><br>
 Installer les dépendances:
 <br>
 pip install -r requirements.txt
-
+<br><br>
 
 
 📊 Pipeline de Données
@@ -52,12 +54,12 @@ Pour chaque match, le modèle utilise des informations connues avant le coup d'e
 Statistiques glissantes (roll5) : Moyenne des 5 derniers matchs pour les points, FG%, TOV, etc.<br>
 Indicateurs d'efficacité : Offensive Rating (ORtg), Defensive Rating (DRtg) et Pace recalculés dynamiquement.<br>
 Contexte : Avantage à domicile, jours de repos, blessures des joueurs clés.<br>
-
+<br><br>
 🛡️ Qualité et CI/CD<br>
 Ce projet utilise GitHub Actions comme "gardien" du code :<br>
 Linter (Flake8) : À chaque push sur la branche main, un robot vérifie automatiquement la syntaxe et la qualité du code Python.<br>
 Le workflow est défini dans .github/workflows/qualite_code.yml.<br>
-
+<br><br>
 🚀 Utilisation<br>
 Collecte : python src/data/scraper_urls.py puis python src/data/scraper_boxscores.py.<br>
 Fusion : python src/features/merge_data.py.<br>
