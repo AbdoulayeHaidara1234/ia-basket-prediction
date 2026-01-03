@@ -9,7 +9,6 @@ Cible : Prédire la victoire de l'équipe à domicile.
 
 🏗️ Architecture Technique
 Structure du projet :
-
 <br>
 <img width="629" height="283" alt="image" src="https://github.com/user-attachments/assets/cbd4d129-d0ca-4760-b97e-e59df7ec2430" />
 <br>
