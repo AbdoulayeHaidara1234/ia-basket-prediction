@@ -9,20 +9,8 @@ Cible : Prédire la victoire de l'équipe à domicile.
 
 🏗️ Architecture Technique
 Structure du projet :
-ia-basket-prediction/
-├── data/
+<img width="619" height="250" alt="image" src="https://github.com/user-attachments/assets/bbd8d34d-3f7b-4795-85c0-e4ba9f5264c0" />
 
-│   ├── raw/            # Données brutes immuables (CSV par mois, boxscores)
-│   ├── interim/        # Données intermédiaires (URLs de matchs, fichiers nettoyés)
-│   └── processed/      # Dataset final unique prêt pour le Machine Learning
-├── src/
-│   ├── data/           # Scripts de scraping (URLs et boxscores)
-│   ├── features/       # Feature engineering (Rolling averages, ratings)
-│   └── models/         # Scripts d'entraînement et de prédiction
-├── notebooks/          # Explorations (EDA) et tests de modèles
-├── .github/workflows/  # Intégration continue (Linter Flake8)
-├── .gitignore          # Exclusion des données lourdes et du venv
-└── requirements.txt    # Dépendances du projet
 
 
 🛠️ Installation et Configuration
