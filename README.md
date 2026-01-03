@@ -11,6 +11,7 @@ Cible : Prédire la victoire de l'équipe à domicile.
 Structure du projet :
 ia-basket-prediction/
 ├── data/
+
 │   ├── raw/            # Données brutes immuables (CSV par mois, boxscores)
 │   ├── interim/        # Données intermédiaires (URLs de matchs, fichiers nettoyés)
 │   └── processed/      # Dataset final unique prêt pour le Machine Learning
