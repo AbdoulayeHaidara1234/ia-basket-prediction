@@ -9,9 +9,10 @@ Cible : Prédire la victoire de l'équipe à domicile.
 
 🏗️ Architecture Technique
 Structure du projet :
-<img width="619" height="250" alt="image" src="https://github.com/user-attachments/assets/bbd8d34d-3f7b-4795-85c0-e4ba9f5264c0" />
 
-
+<br>
+<img width="629" height="283" alt="image" src="https://github.com/user-attachments/assets/cbd4d129-d0ca-4760-b97e-e59df7ec2430" />
+<br>
 
 🛠️ Installation et Configuration
 Cloner le projet :
