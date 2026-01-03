@@ -35,7 +35,7 @@ source .venv/bin/activate  # Sur Mac/Linux
 <br>
 .venv\Scripts\activate   # Sur Windows
 
-<br><br>
+<br>
 Installer les dépendances:
 <br>
 pip install -r requirements.txt
