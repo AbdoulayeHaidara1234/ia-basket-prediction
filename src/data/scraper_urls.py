@@ -14,9 +14,11 @@ OUTPUT_FILE = Path(__file__).resolve().parents[2] / "data" / "interim" / "games_
 def get_random_browser():
     """Retourne une version de navigateur aléatoire pour éviter le blocage."""
     browser_versions = [
-        "chrome99", "chrome100", "chrome101", "chrome104", "chrome107", "chrome110", "chrome116", "chrome119", "chrome120", "chrome123", "chrome124", "chrome131", "chrome133a", "chrome136",
+        "chrome99", "chrome100", "chrome101", "chrome107", "chrome110", "chrome116", "chrome119", "chrome120", "chrome123", "chrome124",
 
-        "safari153", "safari155", "safari170", "safari180", "safari184", "safari260",
+        "edge99", "edge101"
+        
+        "safari15_3", "safari15_5", "safari17_0",
 
         "firefox133", "firefox135"
     ]

@@ -15,9 +15,11 @@ def get_random_browser():
     """Retourne un user-agent aléatoire."""
 
     browser_version = [
-        "chrome99", "chrome100", "chrome101", "chrome104", "chrome107", "chrome110", "chrome116", "chrome119", "chrome120", "chrome123", "chrome124", "chrome131", "chrome133a", "chrome136",
+        "chrome99", "chrome100", "chrome101", "chrome107", "chrome110", "chrome116", "chrome119", "chrome120", "chrome123", "chrome124",
 
-        "safari153", "safari155", "safari170", "safari180", "safari184", "safari260",
+        "edge99", "edge101",
+        
+        "safari15_3", "safari15_5", "safari17_0",
 
         "firefox133", "firefox135"
     ]
@@ -32,8 +34,8 @@ def parse_boxscore(url, request_count):
         request_count += 1
         
         if response.status_code != 200:
-            print(f"Erreur HTTP {response.status_code} : {url}")
-            return None
+            print(f"Erreur HTTP {response.status_code} avec {browser} : {url}")
+            return  [], request_count
 
         soup = BeautifulSoup(response.content, "html.parser")
         
@@ -70,7 +72,7 @@ def parse_boxscore(url, request_count):
         return match_data, request_count
 
     except Exception as e:
-        print(f"Exception sur {url}: {e}")
+        print(f"Exception sur {url} : {e}")
         return None
 
 def main():
@@ -96,7 +98,6 @@ def main():
     for i, url in enumerate(urls):
         print(f"[{i+1}/{len(urls)}] Scraping : {url}")
 
-        
         data, request_count = parse_boxscore(url, request_count)
         if data:
             all_stats.extend(data)
