@@ -25,4 +25,5 @@ def parse_date(date_string):
     return date_string
 
 if __name__ == "__main__":
-    main()
+    print(parse_date("Wed Oct 23 2024"))
+    print(parse_date("October 25, 2024"))
