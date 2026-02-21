@@ -6,7 +6,6 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from curl_cffi import requests as requests_impersonate
 
-# --- CONFIGURATION ---
 SEASON = "2024"  # Adaptation à la saison actuelle ou cible
 BASE_URL = "https://www.basketball-reference.com/boxscores"
 OUTPUT_FILE = Path(__file__).resolve().parents[2] / "data" / "interim" / "games_url.txt"

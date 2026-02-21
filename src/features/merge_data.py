@@ -1,24 +1,28 @@
-import os
+from pathlib import Path
 import pandas as pd
+from src.utils.parseDate import parse_date
+from src.utils.TeamNames import get_team_code
+
+OUTPUT_DIR = Path(__file__).resolve().parents[2] / "data" / "interim" / "schedule"
+OUTPUT_CSV = OUTPUT_DIR / "all_schedule_totals.csv"
 
 def get_data_directory():
     """Retourne le chemin vers le dossier de données."""
-    script_dir = os.path.dirname(__file__)
-    return os.path.join(script_dir, "..", "..", "data", "raw", "schedule")
-
+    return Path(__file__).resolve().parents[2] / "data" / "raw" / "schedule"
 
 
 def charger_tous_les_csv(data_dir):
     """Charge tous les fichiers CSV d'un dossier et les retourne dans une liste."""
     dataframes = []
-    for fichier in sorted(os.listdir(data_dir)):
-        chemin = os.path.join(data_dir, fichier)
-        if os.path.isfile(chemin):
+    data_path = Path(data_dir)
+
+    for fichier in sorted(data_path.iterdir()):
+        if fichier.is_file() and fichier.suffix == '.csv':
             try:
-                df = pd.read_csv(chemin)
+                df = pd.read_csv(fichier)
                 dataframes.append(df)
             except FileNotFoundError as e:
-                print(f"✗ Erreur avec {fichier}: {e}")
+                print(f"Erreur avec {fichier.name}: {e}")
     return dataframes
 
 
@@ -60,12 +64,19 @@ def restructurer_dataset_final():
 
     df_intermediaire["Home_win"] = df_intermediaire["PTS.1"] > df_intermediaire["PTS"] 
 
-    df_intermediaire.columns = ["date", "away_team", "away_score", "home_team", "home_score", "home_win"]
+    df_intermediaire.columns = ["Date", "away_team", "away_score", "home_team", "home_score", "home_win"]
 
-    nv_ordre = ["date", "home_team", "home_score","away_team", "away_score", "home_win"]
+    nv_ordre = ["Date", "home_team", "home_score","away_team", "away_score", "home_win"]
+
 
     df_final = df_intermediaire[nv_ordre]
 
+    df_final['Date'] = df_final['Date'].apply(parse_date)
+    df_final['home_team'] = df_final['home_team'].apply(get_team_code)
+    df_final['away_team'] = df_final['away_team'].apply(get_team_code)
+
     return df_final
 
-print(restructurer_dataset_final())
+df_final = restructurer_dataset_final()
+OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+df_final.to_csv(OUTPUT_CSV, index=False)
